@@ -1,1 +1,1 @@
-utf-8
+{"src":null,"content":"\n\t\t\t( function() {\n\t\t\t\twindow.onpageshow = function( event ) {\n\t\t\t\t\t// Defined window.wpforms means that a form exists on a page.\n\t\t\t\t\t// If so and back/forward button has been clicked,\n\t\t\t\t\t// force reload a page to prevent the submit button state stuck.\n\t\t\t\t\tif ( typeof window.wpforms !== 'undefined' && event.persisted ) {\n\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}() );\n\t\t"}
