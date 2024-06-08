@@ -1,8 +1,9 @@
 import puppeteer from 'puppeteer';
 import * as fs from 'node:fs';
+import axios
 
-const writeToFile = (fname)  => {
-    fs.writeFile( `./src/${fname}`, 'utf-8', (err) => {
+const writeToFile = (fname, data)  => {
+    fs.writeFile( `./src/${fname}`, data, 'utf-8', (err) => {
         if (err) {
           console.error('Error dumping body:', err);
         } else {
@@ -39,13 +40,13 @@ const writeToFile = (fname)  => {
   scripts.forEach((script, id) => {
     let curScript = ""
     if (script.src) {
-      curScript = 'External script:', script.src , '\n';
-      writeToFile("External/"+id)
+    //   curScript = 'External script:', script.src , '\n';
+      writeToFile("External/"+id, JSON.stringify(script))
     } else {
-      curScript = 'Inline script content:', script.content, '\n';
-      writeToFile("Inline/"+ id)
+    //   curScript = 'Inline script content:', script.content, '\n';
+      writeToFile("Inline/"+ id, JSON.stringify(script))
     }
-    myScripts += curScript
+    // myScripts += curScript
   });
 
 
