@@ -1,0 +1,6 @@
+for file in $(ls); do
+  # Calculate MD5 hash of the file and extract only the hash
+  hash=$(md5sum "$file" | awk '{ print $1 }')
+  # Open Chromium with the VirusTotal search URL for the hash
+  firefox "https://www.virustotal.com/gui/search/${hash}"
+done
