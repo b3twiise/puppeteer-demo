@@ -1,15 +1,21 @@
 import puppeteer from 'puppeteer';
 import * as fs from 'node:fs';
-import axios
+import axios from 'axios'
+import { promisify } from 'node:util';
 
-const writeToFile = (fname, data)  => {
-    fs.writeFile( `./src/${fname}`, data, 'utf-8', (err) => {
-        if (err) {
-          console.error('Error dumping body:', err);
-        } else {
-          console.log('Successful write for scripts');
-        }
-      });
+const writeFile = promisify(fs.writeFile)
+
+const writeToFile = async(fname, data)  => {
+    try {
+        await writeFile( `./src/${fname}`, data, 'utf-8')
+          
+              console.log('Successful write for scripts', fname);
+          
+        
+    } catch (error) {
+        console.error(`Error dumping ${fname}:`, error);
+    }
+    
 
  }
 
@@ -34,39 +40,54 @@ const writeToFile = (fname, data)  => {
       };
     })
   );
-
+// console.log(scripts)
   // Log the scripts
-  var myScripts = ""
-  scripts.forEach((script, id) => {
-    let curScript = ""
-    if (script.src) {
-    //   curScript = 'External script:', script.src , '\n';
-      writeToFile("External/"+id, JSON.stringify(script))
-    } else {
-    //   curScript = 'Inline script content:', script.content, '\n';
-      writeToFile("Inline/"+ id, JSON.stringify(script))
+  var brokenScripts = ""
+  await Promise.all(scripts.map(async(script, id) => {
+    console.log(id)
+
+    try {
+        if (script.src) {
+            //   curScript = 'External script:', script.src , '\n';
+              await writeToFile("External/"+id, JSON.stringify(script))
+
+              const response = await axios.get(script.src)
+              
+              await writeToFile("External/" +id +".js", response.data)
+              
+              
+            } else {
+            //   curScript = 'Inline script content:', script.content, '\n';
+              await writeToFile("Inline/"+ id, JSON.stringify(script))
+            }
+            // myScripts += curScript
+        
+    } catch (error) {
+        if(script.src)
+        brokenScripts += (script.src + '\n')
     }
-    // myScripts += curScript
-  });
+    // let curScript = ""
+    
+  }));
 
-
+await writeToFile('External/brokenScripts', brokenScripts)
   // Write the HTML content to a file
-  fs.writeFile('body.html', html, 'utf-8', (err) => {
-    if (err) {
-      console.error('Error dumping body:', err);
-    } else {
-      console.log('Successful write for html');
-    }
-  });
+//   fs.writeFile('body.html', html, 'utf-8', (err) => {
+//     if (err) {
+//       console.error('Error dumping body:', err);
+//     } else {
+//       console.log('Successful write for html');
+//     }
+//   });
 
-// Write scripts content to a file
-fs.writeFile( "myScripts", myScripts, 'utf-8', (err) => {
-    if (err) {
-      console.error('Error dumping body:', err);
-    } else {
-      console.log('Successful write for scripts');
-    }
-  });
+// // Write scripts content to a file
+// fs.writeFile( "myScripts", myScripts, 'utf-8', (err) => {
+//     if (err) {
+//       console.error('Error dumping body:', err);
+//     } else {
+//       console.log('Successful write for scripts');
+//     }
+//   });
 
   
  
